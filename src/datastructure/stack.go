@@ -1,4 +1,4 @@
-package data_structure
+package datastructure
 
 type IStack interface {
 	Pop() (any, bool)
