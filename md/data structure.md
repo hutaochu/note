@@ -4,7 +4,7 @@
 
 「数组 array」是一种线性数据结构，其将相同类型元素存储在连续的内存空间中。我们将元素在数组中的位置称为该元素的「索引 index」。
 
-<img src="/Users/dingyuan.wu/github/hutaochu/note/md/images/array_definition.png" style="zoom:60%" align=left />
+<img src="./images/array_definition.png" style="zoom:60%" align=left />
 
 #### 优缺点
 
@@ -26,7 +26,7 @@
 
 「链表 linked list」是一种线性数据结构，其中的每个元素都是一个节点对象，各个节点通过“引用”相连接。
 
-<img src="/Users/dingyuan.wu/github/hutaochu/note/md/images/linkedlist_definition.png" style="zoom:60%" align=left />
+<img src="./images/linkedlist_definition.png" style="zoom:60%" align=left />
 
 
 
