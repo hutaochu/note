@@ -4,7 +4,7 @@
  - goroutine 
  - GMP
  - channel 
- - lock
+ - lock sync/mutex
  - context
 
 
