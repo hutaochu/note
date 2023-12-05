@@ -15,7 +15,7 @@ OpenKruise 是一个基于 Kubernetes 的扩展套件，主要聚焦于云原生
 
 ## 系统架构
 
-![](/Users/dingyuan.wu/github/hutaochu/note/md/images/openkruise_architecture.png)
+![](../images/openkruise_architecture.png)
 
 kruise相关的组件都部署在kruise-system这个namespace下，包括kruise-controller-manager（通过deployment部署）、kruise-daemon（通过daemonset部署）。
 
@@ -23,7 +23,7 @@ kruise相关的组件都部署在kruise-system这个namespace下，包括kruise-
 
 原地升级和重建升级的区别：
 
-![](/Users/dingyuan.wu/github/hutaochu/note/md/images/inplace-update-comparation.png)
+<img src="../images/inplace-update-comparation.png" style="zoom:50%;" />
 
 使用原地升级时，podName、podIP、pod的nodeIP（严格的原地升级时不会发生变化）都不会发生变化。当业务需要复用pod的数据（比如：一些业务在pod启动的时候会预加载大量的数据，或者有使用pv的时候）或者不希望pod的信息（如podName、podIP等）发生变化，此时可以使用原地升级的能力。
 
@@ -47,6 +47,6 @@ kruise相关的组件都部署在kruise-system这个namespace下，包括kruise-
 
 ### 原地升级流程
 
-![](/Users/dingyuan.wu/github/hutaochu/note/md/images/inplace-update-workflow.png)
+![](../images/inplace-update-workflow.png)
 
 ### 多容器升级顺序控制
