@@ -4,7 +4,7 @@ OpenKruise 是一个基于 Kubernetes 的扩展套件，主要聚焦于云原生
 
 ## 核心能力
 
-- 增强版本的workload，CloneSet、Advanced StatefulSet、Advanced DaemonSet、BroadcastJob等，除原声能力外额外支持的能力：
+- 增强版本的workload，CloneSet、Advanced StatefulSet、Advanced DaemonSet、BroadcastJob等，除原生能力外额外支持的能力：
   - 原地升级/重启
   - 可配置的扩缩容
   - 可配置的发布策略
