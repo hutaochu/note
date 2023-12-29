@@ -9,3 +9,9 @@
 大文件或者字符串的处理，需要考虑copy等操作的资源消耗。
 
 CICD ------> deploy server(apply yaml) --------> kubernetes cluster
+
+
+
+严于律己，宽以待人
+
+强势文化，弱势文化，文化属性
