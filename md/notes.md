@@ -8,10 +8,13 @@
 
 大文件或者字符串的处理，需要考虑copy等操作的资源消耗。
 
-CICD ------> deploy server(apply yaml) --------> kubernetes cluster
+CICD ------> deploy server(generate/apply yaml) --------> kubernetes cluster --------> 可观测行（监控、日志、告警）
 
 
 
 严于律己，宽以待人
 
 强势文化，弱势文化，文化属性
+
+自由表达观点，不要试图说服别人接受你的观点，但是你应该听取别人的意见
+
