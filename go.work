@@ -1,11 +1,9 @@
-go 1.22.0
-
-toolchain go1.22.1
+go 1.22.1
 
 use (
 	./leetcode/questionbank
-	./src/k8sdemo
 	./src/algorithm
 	./src/datastructure
+	./src/k8sdemo
 	./src/pkg/perioddispatcher
 )
