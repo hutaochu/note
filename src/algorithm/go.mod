@@ -1,4 +1,4 @@
-module github.com/hutaochu/algorithm
+module github.com/hutaochu/note/algorithm
 
 go 1.22
 

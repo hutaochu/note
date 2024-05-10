@@ -3,7 +3,7 @@ package datastructure_test
 import (
 	"testing"
 
-	"github.com/hutaochu/datastructure"
+	"github.com/hutaochu/note/datastructure"
 	"github.com/stretchr/testify/assert"
 )
 

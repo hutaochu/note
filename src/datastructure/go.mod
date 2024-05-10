@@ -1,4 +1,4 @@
-module github.com/hutaochu/datastructure
+module github.com/hutaochu/note/datastructure
 
 go 1.18
 

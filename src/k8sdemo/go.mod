@@ -1,6 +1,6 @@
 module github.com/hutaochu/k8sdemo
 
-go 1.22.1
+go 1.22.3
 
 require k8s.io/client-go v0.29.4
 
