@@ -3,9 +3,9 @@
 ## language
 
 - [x] go
-- [x] Node.js
 - [ ] python
-- [ ] Shell
+- [ ] rust
+- [ ] shell
 
 ## OS
 
