@@ -25,6 +25,7 @@ type notFoundErr struct {
 
 func (e *notFoundErr) Error() string {
 	return e.message
+
 }
 
 func testFound() error {

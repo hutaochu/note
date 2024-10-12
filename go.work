@@ -1,10 +1,11 @@
-go 1.22.3
+go 1.22.4
 
 use (
 	./leetcode/questionbank
+	./leetcode/questiontest
 	./src/algorithm
 	./src/datastructure
-	./src/k8sdemo
 	./src/errordemo
+	./src/k8sdemo
 	./src/pkg/perioddispatcher
 )
