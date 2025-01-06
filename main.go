@@ -29,3 +29,5 @@ func main() {
 	quickSort(arr, 0, len(arr)-1)
 	fmt.Println(arr)
 }
+
+// [3,5,1,6,2,0,8,null,null,7,4]
