@@ -3,6 +3,7 @@ package questionbank
 import (
 	"container/heap"
 	"fmt"
+	"math"
 )
 
 type ListNode struct {
@@ -192,6 +193,8 @@ func FindCycleStartNode(l *ListNode) *ListNode {
 		}
 	}
 	if hasCycle {
+		// fast指针从头和slow一样的速率前进
+		// 当两者相遇时，即为环的起点
 		fast = l
 		for fast != slow {
 			slow = slow.Next
@@ -330,3 +333,504 @@ func FindKLargestSums(A, B []int, k int) []int {
 	}
 	return results
 }
+
+// SumTarget
+//
+// 给你一个下标从 1 开始的整数数组 numbers ，该数组已按 非递减顺序排列  ，请你从数组中找出满足相加之和等于目标数 target 的两个数。
+//
+// 如果设这两个数分别是 numbers[index1] 和 numbers[index2] ，则 1 <= index1 < index2 <= numbers.length 。
+//
+// 以长度为 2 的整数数组 [index1, index2] 的形式返回这两个整数的下标 index1 和 index2。
+//
+// 你可以假设每个输入 只对应唯一的答案 ，而且你 不可以 重复使用相同的元素。
+//
+// 你所设计的解决方案必须只使用常量级的额外空间。
+func SumTarget(nums []int, target int) []int {
+	var result []int
+	left, right := 1, len(nums)-1
+	for left < right {
+		if nums[left]+nums[right] == target {
+			result = append(result, left, right)
+			return result
+		}
+		if nums[left]+nums[right] < target {
+			left++
+			continue
+		} else {
+			right--
+		}
+	}
+	return result
+}
+
+// LongestPalindromeSubStr 找出最长的回文串
+func LongestPalindromeSubStr(str string) string {
+	var maxStr string
+	for i := 0; i < len(str); i++ {
+		r1 := findPalindromeStrFromMid(str, i, i)
+		if len(maxStr) < len(r1) {
+			maxStr = r1
+		}
+		r2 := findPalindromeStrFromMid(str, i, i+1)
+		if len(maxStr) < len(r2) {
+			maxStr = r2
+		}
+	}
+	return maxStr
+}
+
+func findPalindromeStrFromMid(s string, m, n int) string {
+	var res string
+	for n < len(s) && m >= 0 {
+		if s[m] != s[n] {
+			break
+		}
+		m--
+		n++
+	}
+	res = s[m+1 : n]
+	return res
+}
+
+// FindMinCoveringSubStr
+//
+// 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+//
+// 注意：
+//
+// 对于 t 中重复字符，我们寻找的子字符串中该字符数量必须不少于 t 中该字符数量。
+// 如果 s 中存在这样的子串，我们保证它是唯一的答案。
+func FindMinCoveringSubStr(s, t string) string {
+	need, window := make(map[byte]int), make(map[byte]int)
+	for i, _ := range t {
+		need[t[i]]++
+	}
+	left := 0
+	right := 0
+	validNums := 0
+	var res string
+	for right < len(s) {
+		a := s[right]
+		if _, ok := need[a]; ok {
+			window[a]++
+			if window[a] == need[a] {
+				validNums++
+			}
+		}
+		right++
+
+		// 所有的字符都已经包含
+		for validNums == len(need) && left < right {
+			if right-left < len(res) || len(res) == 0 {
+				res = s[left:right]
+			}
+			b := s[left]
+			left++
+			if _, ok := need[b]; ok {
+				window[b]--
+				if window[b] != need[b] {
+					validNums--
+				}
+			}
+		}
+	}
+	return res
+}
+
+func MinWindow(s string, t string) string {
+	need, window := make(map[byte]int), make(map[byte]int)
+	for i := range t {
+		need[t[i]]++
+	}
+
+	left, right := 0, 0
+	valid := 0
+	// 记录最小覆盖子串的起始索引及长度
+	start, length := 0, math.MaxInt32
+	for right < len(s) {
+		// c 是将移入窗口的字符
+		c := s[right]
+		// 扩大窗口
+		right++
+		// 进行窗口内数据的一系列更新
+		if _, ok := need[c]; ok {
+			window[c]++
+			if window[c] == need[c] {
+				valid++
+			}
+		}
+
+		// 判断左侧窗口是否要收缩
+		for valid == len(need) {
+			// 在这里更新最小覆盖子串
+			if right-left < length {
+				start = left
+				length = right - left
+			}
+			// d 是将移出窗口的字符
+			d := s[left]
+			// 缩小窗口
+			left++
+			// 进行窗口内数据的一系列更新
+			if _, ok := need[d]; ok {
+				if window[d] == need[d] {
+					valid--
+				}
+				window[d]--
+			}
+		}
+	}
+	// 返回最小覆盖子串
+	if length == math.MaxInt32 {
+		return ""
+	}
+	return s[start : start+length]
+}
+
+// FindSubStr
+//
+// 给你两个字符串 s1 和 s2 ，写一个函数来判断 s2 是否包含 s1 的排列。如果是，返回 true ；否则，返回 false 。
+//
+// 换句话说，s1 的排列之一是 s2 的 子串 。
+func FindSubStr(s1, s2 string) bool {
+	res := FindMinCoveringSubStr(s2, s1)
+	return len(res) == len(s1)
+}
+
+// MaxProfit
+// 给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+//
+// 你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+//
+// 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+//
+// 示例 1：
+//
+// 输入：[7,1,5,3,6,4]
+// 输出：5
+// 解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+// 注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+//
+// 示例 2：
+//
+// 输入：prices = [7,6,4,3,1]
+// 输出：0
+// 解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+//
+// 提示：
+//
+// 1 <= prices.length <= 105
+//
+// 0 <= prices[i] <= 104
+func MaxProfit(prices []int) int {
+	minPrice := math.MaxInt
+	maxProfit := 0
+	for _, v := range prices {
+		if v < minPrice {
+			minPrice = v
+		}
+		profit := v - minPrice
+		if profit > maxProfit {
+			maxProfit = profit
+		}
+	}
+	return maxProfit
+}
+
+// CoinsChange
+//
+// 给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+//
+// 计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+//
+// 你可以认为每种硬币的数量是无限的。
+//
+// 示例 1：
+//
+// 输入：coins = [1, 2, 5], amount = 11
+// 输出：3
+// 解释：11 = 5 + 5 + 1
+// 示例 2：
+//
+// 输入：coins = [2], amount = 3
+// 输出：-1
+// 示例 3：
+//
+// 输入：coins = [1], amount = 0
+// 输出：0
+//
+// 提示：
+//
+// 1 <= coins.length <= 12
+// 1 <= coins[i] <= 231 - 1
+// 0 <= amount <= 104
+func CoinsChange(coins []int, amount int) int {
+	if amount < 0 {
+		return -1
+	}
+	if amount == 0 {
+		return 0
+	}
+	var res []int
+	for _, v := range coins {
+		if amount-v > 0 {
+			if r := CoinsChange(coins, amount-v); r > 0 {
+				res = append(res, r+1)
+			}
+		}
+		if amount-v == 0 {
+			res = append(res, 1)
+		}
+		if amount-v < 0 {
+			res = append(res, -1)
+		}
+	}
+	r := math.MaxInt
+	for _, v := range res {
+		if v < r {
+			r = v
+		}
+	}
+	if r == math.MaxInt {
+		return -1
+	}
+	return r
+}
+
+// MaxProfit2
+// 在每一天，你可以决定是否购买和/或出售股票。你在任何时候 最多 只能持有 一股 股票。你也可以先购买，然后在 同一天 出售。
+//
+// 返回 你能获得的 最大 利润 。
+//
+// 示例 1：
+//
+// 输入：prices = [7,1,5,3,6,4]
+// 输出：7
+// 解释：在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5 - 1 = 4。
+// 随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6 - 3 = 3。
+// 最大总利润为 4 + 3 = 7 。
+// 示例 2：
+//
+// 输入：prices = [1,2,3,4,5]
+// 输出：4
+// 解释：在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5 - 1 = 4。
+// 最大总利润为 4 。
+//
+// 示例 3：
+//
+// 输入：prices = [7,6,4,3,1]
+// 输出：0
+// 解释：在这种情况下, 交易无法获得正利润，所以不参与交易可以获得最大利润，最大利润为 0。
+//
+// 提示：
+//
+// 1 <= prices.length <= 3 * 104
+//
+// 0 <= prices[i] <= 104
+func MaxProfit2(prices []int) int {
+	totalProfit := 0
+	for i := 1; i < len(prices); i++ {
+		if prices[i] > prices[i-1] {
+			totalProfit += prices[i] - prices[i-1]
+		}
+	}
+
+	return totalProfit
+}
+
+//方法一：动态规划
+//考虑到「不能同时参与多笔交易」，因此每天交易结束后只可能存在手里有一支股票或者没有股票的状态。
+//
+//定义状态 dp[i][0] 表示第 i 天交易完后手里没有股票的最大利润，dp[i][1] 表示第 i 天交易完后手里持有一支股票的最大利润（i 从 0 开始）。
+//
+//考虑 dp[i][0] 的转移方程，如果这一天交易完后手里没有股票，那么可能的转移状态为前一天已经没有股票，即 dp[i−1][0]，
+//或者前一天结束的时候手里持有一支股票，即 dp[i−1][1]，这时候我们要将其卖出，并获得 prices[i] 的收益。因此为了收益最大化，我们列出如下的转移方程：
+//
+//dp[i][0]=max{dp[i−1][0],dp[i−1][1]+prices[i]}
+//再来考虑 dp[i][1]，按照同样的方式考虑转移状态，那么可能的转移状态为前一天已经持有一支股票，即 dp[i−1][1]，或者前一天结束时还没有股票，即 dp[i−1][0]，这时候我们要将其买入，并减少 prices[i] 的收益。可以列出如下的转移方程：
+//
+//dp[i][1]=max{dp[i−1][1],dp[i−1][0]−prices[i]}
+//对于初始状态，根据状态定义我们可以知道第 0 天交易结束的时候 dp[0][0]=0，dp[0][1]=−prices[0]。
+//
+//因此，我们只要从前往后依次计算状态即可。由于全部交易结束后，持有股票的收益一定低于不持有股票的收益，因此这时候 dp[n−1][0] 的收益必然是大于 dp[n−1][1] 的，最后的答案即为 dp[n−1][0]。
+//
+//C++
+//Java
+//JavaScript
+//Golang
+//C
+//class Solution {
+//public:
+//int maxProfit(vector<int>& prices) {
+//int n = prices.size();
+//int dp[n][2];
+//dp[0][0] = 0, dp[0][1] = -prices[0];
+//for (int i = 1; i < n; ++i) {
+//dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+//dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+//}
+//return dp[n - 1][0];
+//}
+//};
+//注意到上面的状态转移方程中，每一天的状态只与前一天的状态有关，而与更早的状态都无关，因此我们不必存储这些无关的状态，只需要将 dp[i−1][0] 和 dp[i−1][1] 存放在两个变量中，通过它们计算出 dp[i][0] 和 dp[i][1] 并存回对应的变量，以便于第 i+1 天的状态转移即可。
+//
+//C++
+//Java
+//JavaScript
+//Golang
+//C
+//class Solution {
+//public:
+//int maxProfit(vector<int>& prices) {
+//int n = prices.size();
+//int dp0 = 0, dp1 = -prices[0];
+//for (int i = 1; i < n; ++i) {
+//int newDp0 = max(dp0, dp1 + prices[i]);
+//int newDp1 = max(dp1, dp0 - prices[i]);
+//dp0 = newDp0;
+//dp1 = newDp1;
+//}
+//return dp0;
+//}
+//};
+//复杂度分析
+//
+//时间复杂度：O(n)，其中 n 为数组的长度。一共有 2n 个状态，每次状态转移的时间复杂度为 O(1)，因此时间复杂度为 O(2n)=O(n)。
+//
+//空间复杂度：O(n)。我们需要开辟 O(n) 空间存储动态规划中的所有状态。如果使用空间优化，空间复杂度可以优化至 O(1)。
+//
+//方法二：贪心
+//由于股票的购买没有限制，因此整个问题等价于寻找 x 个不相交的区间 (l
+//i
+//​
+//,r
+//i
+//​
+//] 使得如下的等式最大化
+//
+//i=1
+//∑
+//x
+//​
+//a[r
+//i
+//​
+//]−a[l
+//i
+//​
+//]
+//其中 l
+//i
+//​
+//表示在第 l
+//i
+//​
+//天买入，r
+//i
+//​
+//表示在第 r
+//i
+//​
+//天卖出。
+//
+//同时我们注意到对于 (l
+//i
+//​
+//,r
+//i
+//​
+//] 这一个区间贡献的价值 a[r
+//i
+//​
+//]−a[l
+//i
+//​
+//]，其实等价于 (l
+//i
+//​
+//,l
+//i
+//​
+//+1],(l
+//i
+//​
+//+1,l
+//i
+//​
+//+2],…,(r
+//i
+//​
+//−1,r
+//i
+//​
+//] 这若干个区间长度为 1 的区间的价值和，即
+//
+//a[r
+//i
+//​
+//]−a[l
+//i
+//​
+//]=(a[r
+//i
+//​
+//]−a[r
+//i
+//​
+//−1])+(a[r
+//i
+//​
+//−1]−a[r
+//i
+//​
+//−2])+…+(a[l
+//i
+//​
+//+1]−a[l
+//i
+//​
+//])
+//因此问题可以简化为找 x 个长度为 1 的区间 (l
+//i
+//​
+//,l
+//i
+//​
+//+1] 使得 ∑
+//i=1
+//x
+//​
+//a[l
+//i
+//​
+//+1]−a[l
+//i
+//​
+//] 价值最大化。
+//
+//贪心的角度考虑我们每次选择贡献大于 0 的区间即能使得答案最大化，因此最后答案为
+//
+//ans=
+//i=1
+//∑
+//n−1
+//​
+//max{0,a[i]−a[i−1]}
+//其中 n 为数组的长度。
+//
+//需要说明的是，贪心算法只能用于计算最大利润，计算的过程并不是实际的交易过程。
+//
+//考虑题目中的例子 [1,2,3,4,5]，数组的长度 n=5，由于对所有的 1≤i<n 都有 a[i]>a[i−1]，因此答案为
+//
+//ans=
+//i=1
+//∑
+//n−1
+//​
+//a[i]−a[i−1]=4
+//但是实际的交易过程并不是进行 4 次买入和 4 次卖出，而是在第 1 天买入，第 5 天卖出。
+//
+//作者：力扣官方题解
+//链接：https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/solutions/476791/mai-mai-gu-piao-de-zui-jia-shi-ji-ii-by-leetcode-s/
+//来源：力扣（LeetCode）
+//著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

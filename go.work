@@ -7,5 +7,4 @@ use (
 	./src/datastructure
 	./src/errordemo
 	./src/k8sdemo
-	./src/pkg/perioddispatcher
 )
