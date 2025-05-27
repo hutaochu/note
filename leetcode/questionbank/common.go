@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
+	"sync"
 )
 
 type ListNode struct {
@@ -834,3 +835,131 @@ func MaxProfit2(prices []int) int {
 //链接：https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/solutions/476791/mai-mai-gu-piao-de-zui-jia-shi-ji-ii-by-leetcode-s/
 //来源：力扣（LeetCode）
 //著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+// run
+// 1. 开启M个协程执行M个任务,等待所有任务执行结束后退出(不可以使用waitGroup)
+// 2. 开启M个协程执行N个任务,等待所有任务执行结束后退出
+func run(num int, job func()) {
+	result := make(chan struct{})
+
+	for i := 0; i < num; i++ {
+		go func() {
+			defer func() {
+				result <- struct{}{}
+			}()
+			job()
+		}()
+	}
+
+	doneJob := 0
+	for range result {
+		doneJob++
+		if doneJob == num {
+			break
+		}
+	}
+}
+
+// run2
+// 1. 开启M个协程执行M个任务,等待所有任务执行结束后退出(不可以使用waitGroup)
+// 2. 开启M个协程执行N个任务,等待所有任务执行结束后退出
+func run2(m, n int, job func()) {
+	jobChan := make(chan func(), n)
+	wg := sync.WaitGroup{}
+	wg.Add(n)
+	done := make(chan struct{})
+
+	for k := 0; k < n; k++ {
+		jobChan <- job
+	}
+
+	for i := 0; i < m; i++ {
+		go func() {
+			for {
+				select {
+				case j := <-jobChan:
+					j()
+					wg.Done()
+				case <-done:
+					return
+				}
+			}
+		}()
+	}
+
+	wg.Wait()
+	done <- struct{}{}
+}
+
+// run3
+// 3个goroutine，分别输出a、b、c
+func run3() {
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+		println("a")
+	}()
+	go func() {
+		defer wg.Done()
+		println("b")
+	}()
+	go func() {
+		defer wg.Done()
+		println("c")
+	}()
+
+	wg.Wait()
+}
+
+// 3个goroutine，分别输出a、b、c，一共打印10次
+// func run4() {
+// 	wg := sync.WaitGroup{}
+// 	wg.Add(10)
+// 	jobs := make(chan int, 10)
+// 	done := make(chan struct{})
+
+// 	sendA, sendB, sendC := make(chan struct{}), make(chan struct{}), make(chan struct{})
+// 	go func() {
+// 		for {
+// 			select {
+// 			case <-sendA:
+// 				_, ok := <-jobs
+// 				println("a")
+// 				sendB <- struct{}{}
+// 			case <-done:
+// 				return
+// 			}
+// 		}
+// 	}()
+// 	go func() {
+// 		for {
+// 			_, ok := <-jobs
+// 			if ok {
+// 				println("b")
+// 				wg.Done()
+// 			} else {
+// 				return
+// 			}
+// 		}
+// 	}()
+// 	go func() {
+// 		for {
+// 			_, ok := <-jobs
+// 			if ok {
+// 				println("c")
+// 				wg.Done()
+// 			} else {
+// 				return
+// 			}
+// 		}
+// 	}()
+
+// 	for i := 0; i < 10; i++ {
+// 		jobs <- i
+// 	}
+
+// 	wg.Wait()
+// 	close(jobs)
+// }

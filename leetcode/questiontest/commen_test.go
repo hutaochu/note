@@ -2,6 +2,7 @@ package questiontest
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/hutaochu/note/leetcode/questionbank"
@@ -36,6 +37,48 @@ func TestFindSubStr(t *testing.T) {
 }
 
 func TestCoinsChange(t *testing.T) {
-	fmt.Println(questionbank.CoinsChange([]int{1, 2, 5}, 11))
-	fmt.Println(questionbank.CoinsChange([]int{1, 2147483647}, 2))
+	wg := sync.WaitGroup{}
+	wg.Add(10)
+	jobs := make(chan int, 10)
+
+	go func() {
+		for {
+			_, ok := <-jobs
+			if ok {
+				println("a")
+				wg.Done()
+			} else {
+				return
+			}
+		}
+	}()
+	go func() {
+		for {
+			_, ok := <-jobs
+			if ok {
+				println("b")
+				wg.Done()
+			} else {
+				return
+			}
+		}
+	}()
+	go func() {
+		for {
+			_, ok := <-jobs
+			if ok {
+				println("c")
+				wg.Done()
+			} else {
+				return
+			}
+		}
+	}()
+
+	for i := 0; i < 10; i++ {
+		jobs <- i
+	}
+
+	wg.Wait()
+	close(jobs)
 }

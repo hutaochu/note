@@ -2,32 +2,34 @@ package main
 
 import "fmt"
 
-func partition(arr []int, i, j int) int {
-	cursor := i
-	for index := i; index < j; index++ {
-		if arr[index] < arr[cursor] {
-			arr[index], arr[cursor] = arr[cursor], arr[index]
-			cursor++
-
-			arr[cursor], arr[index] = arr[index], arr[cursor]
-		}
-	}
-	return cursor
+// 父类
+type Animal struct {
+	Name string
 }
 
-func quickSort(arr []int, l, r int) {
-	if l >= r {
-		return
-	}
-	mid := partition(arr, l, r)
-	quickSort(arr, l, mid-1)
-	quickSort(arr, mid+1, r)
+// 父类方法
+func (a *Animal) Speak() {
+	fmt.Println(a.Name, "makes a sound")
+}
+
+// 子类继承 Animal
+type Dog struct {
+	Animal // 继承（嵌套）Animal
+	Breed  string
+}
+
+// 子类新增方法
+func (d *Dog) Bark() {
+	fmt.Println(d.Name, "barks loudly!")
 }
 
 func main() {
-	arr := []int{24, 12, 22, 11, 55, 33, 11, 22, 55}
-	quickSort(arr, 0, len(arr)-1)
-	fmt.Println(arr)
-}
+	// 创建 Dog 实例
+	dog := Dog{Animal: Animal{Name: "Buddy"}, Breed: "Golden Retriever"}
 
-// [3,5,1,6,2,0,8,null,null,7,4]
+	// 调用父类方法
+	dog.Speak() // Buddy makes a sound
+
+	// 调用子类方法
+	dog.Bark() // Buddy barks loudly!
+}
